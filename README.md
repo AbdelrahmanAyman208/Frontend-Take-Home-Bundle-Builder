@@ -49,8 +49,9 @@ Navigate to `http://localhost:8080` to view the app!
     - The catalog (cameras, sensors, plans) is seeded into the database.
     - An AI endpoint (`/api/ai`) utilizes the `OpenRouter` API to stream dynamic recommendations based on user quiz answers, rather than hardcoding static bundles.
     - A checkout endpoint (`/api/checkout`) processes the order and dynamically decrements inventory.
-4. **Data Syncing**: The frontend uses user-friendly "slugs" (e.g. `cam-v4`, `white`) to identify products for better readability in code and URLs, while the backend uses proper MongoDB `ObjectIds`. I built a mapping layer in the backend to translate these seamlessly during saves and checkout.
-5. **Styling**: Used Tailwind CSS combined with standard CSS for custom animations. This allowed for rapid prototyping of a "premium" UI with micro-interactions without writing massive CSS files.
+4. **Pessimistic Locking / Atomic Inventory Control**: To solve the classic e-commerce problem of overselling during high-concurrency checkouts, the checkout endpoint uses MongoDB's atomic `findOneAndUpdate` combined with `$elemMatch` and `$inc`. This allows the server to query for a product *and* verify it has sufficient stock in the same database operation that deducts the stock, ensuring race conditions cannot cause negative inventory.
+5. **Data Syncing**: The frontend uses user-friendly "slugs" (e.g. `cam-v4`, `white`) to identify products for better readability in code and URLs, while the backend uses proper MongoDB `ObjectIds`. I built a mapping layer in the backend to translate these seamlessly during saves and checkout.
+6. **Styling**: Used Tailwind CSS combined with standard CSS for custom animations. This allowed for rapid prototyping of a "premium" UI with micro-interactions without writing massive CSS files.
 
 ## 🚧 What I Didn't Finish / Future Work
 
